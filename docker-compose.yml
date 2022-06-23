@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  bitcoin-core:
+    image: ruimarinho/bitcoin-core:23.0-alpine
+    command:
+      -printtoconsole
+      -regtest=1
+      -server=1
+      -fallbackfee=0.00001
+      -rpcbind=0.0.0.0:8332
+      -rpcport=8332
+      -rpcuser=user
+      -rpcpassword=password
+      -rpcallowip=0.0.0.0/0
+      -dbtype=sqlite3
+      -zmqpubrawblock=tcp://0.0.0.0:3010
+    ports:
+      - "8332:8332"
+      - "3010:3010"
