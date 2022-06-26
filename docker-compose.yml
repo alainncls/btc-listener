@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  bitcoin-core:
+  bitcoind:
     image: ruimarinho/bitcoin-core:23.0-alpine
     command:
       -printtoconsole
@@ -12,8 +12,25 @@ services:
       -rpcuser=user
       -rpcpassword=password
       -rpcallowip=0.0.0.0/0
-      -dbtype=sqlite3
       -zmqpubrawblock=tcp://0.0.0.0:3010
+    healthcheck:
+      test: ["CMD", "/entrypoint.sh", "bitcoin-cli", "getinfo"]
     ports:
       - "8332:8332"
-      - "3010:3010"
+    volumes:
+      - bitcoin-data:/data
+    networks:
+      - bitcoin
+  bitcoin-cli:
+    image: nicolasdorier/docker-bitcoin:22.0
+    entrypoint: ["/entrypoint.sh", "bitcoin-cli"]
+    command: "-rpcuser=user -rpcpassword=password"
+    depends_on:
+      - bitcoind
+    network_mode: service:bitcoind
+
+networks:
+  bitcoin:
+
+volumes:
+  bitcoin-data:
